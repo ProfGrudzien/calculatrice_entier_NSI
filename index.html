@@ -119,18 +119,99 @@
             var calculExp = ""
             const divCalcul = document.querySelector("div.calcul")
             const divReponse = document.querySelector("div.reponse")
-            function calculer(expression) {
-                const regExp = new RegExp("^[0-9]*÷[0-9]*$")
-                if (expression.match(regExp)) {
-                    const liste = expression.split("÷")
-                    return `q = ${Math.floor(liste[0]/liste[1])} ; r = ${liste[0]%liste[1]}`
-                } else if (expression.indexOf("÷") > -1) {
-                    const newRegExp = /([0-9]+)÷([0-9]+)/gi
-                    const newExpression = expression.replace(newRegExp, "Math.floor($1/$2)")
-                    return eval(newExpression).toString()
+            function searchForDividende(expr, index) {
+                const chiffres = "0123456789"
+                if (expr[index-1]) {
+                    const char = expr[index-1]
+                    if (char == ")") {
+                        var count = 1
+                        while (expr[index-1] && count > 0) {
+                            if (expr[index-1] == ")") {
+                                count += 1
+                            } else if (expr[index+1] == "(") {
+                                count += -1
+                            }
+                            index += -1
+                        }
+                    } else if (char == ">") {
+                        var count = 1
+                        while (expr[index-1] && count > 0) {
+                            if (expr[index-1] == ">") {
+                                count += 1
+                            } else if (expr[index-1] == "<") {
+                                count += -1
+                            }
+                            index += -1
+                        }
+                    } else if (chiffres.indexOf(char) > -1) {
+                        while (expr[index-1] && chiffres.indexOf(expr[index-1]) > -1) {
+                            index += -1
+                        }
+                    } else {
+                        console.log(expr)
+                        console.log(index)
+                        throw "impossible de déterminer le dividende"
+                    }
+                    return index
+                } else {
+                    throw "Signe ÷ en début d'expression"
                 }
+            }
+            
+            function searchForDiviseur(expr, index) {
+                const chiffres = "0123456789"
+                if (expr[index+1]) {
+                    const char = expr[index+1]
+                    if (char == "(") {
+                        var count = 1
+                        while (expr[index+1] && count > 0) {
+                            if (expr[index+1] == "(") {
+                                count += 1
+                            } else if (expr[index+1] == ")") {
+                                count += -1
+                            }
+                            index += 1
+                        }
+                    } else if (char == "<") {
+                        var count = 1
+                        while (expr[index+1] && count > 0) {
+                            if (expr[index+1] == "<") {
+                                count += 1
+                            } else if (expr[index+1] == ">") {
+                                count += -1
+                            }
+                            index += 1
+                        }
+                    } else if (chiffres.indexOf(char) > -1) {
+                        while (expr[index+1] && chiffres.indexOf(expr[index+1]) > -1) {
+                            index += 1
+                        }
+                    } else {
+                        console.log(expr)
+                        console.log(index)
+                        throw "impossible de déterminer le diviseur"
+                    }
+                    return index+1
+                } else {
+                    throw "Signe ÷ en fin d'expression"
+                }
+            }
+            function calculer(expr) {
+                const regExp = new RegExp("^[0-9]*÷[0-9]*$")
+                if (expr.match(regExp)) {
+                    const liste = expr.split("÷")
+                    return `q = ${Math.floor(liste[0]/liste[1])} ; r = ${liste[0]%liste[1]}`
+                }
+                while (expr.indexOf("÷") > -1) {
+                    const indexDivision = expr.indexOf("÷")
+                    const indexDividende = searchForDividende(expr, indexDivision)
+                    const indexDiviseur = searchForDiviseur(expr, indexDivision)
+                    expr = expr.substring(0, indexDividende) + "<" + expr.substring(indexDividende, indexDivision) + "/" + expr.substring(indexDivision+1, indexDiviseur) + ">" + expr.substring(indexDiviseur, expr.length)
+                }
+                expr = expr.split("<").join("Math.floor(")
+                expr = expr.split(">").join(")")
                 try {
-                    return eval(expression).toString()
+                    return eval(expr).toString()
                 } catch (e) {
                     console.error(e)
                     return "erreur de syntaxe"
