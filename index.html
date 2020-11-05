@@ -200,6 +200,9 @@
                 const regExp = new RegExp("^[0-9]*÷[0-9]*$")
                 if (expr.match(regExp)) {
                     const liste = expr.split("÷")
+                    if (liste[1] == '0') {
+                        return "division par 0"
+                    }
                     return `q = ${Math.floor(liste[0]/liste[1])} ; r = ${liste[0]%liste[1]}`
                 }
                 while (expr.indexOf("÷") > -1) {
@@ -215,6 +218,39 @@
                 } catch (e) {
                     console.error(e)
                     return "erreur de syntaxe"
+                }
+            }
+            function handleKeyUp(event) {
+                console.log(event.key)
+                const dico = {
+                    "0": "0",
+                    "1": "1",
+                    "2": "2",
+                    "3": "3",
+                    "4": "4",
+                    "5": "5",
+                    "6": "6",
+                    "7": "7",
+                    "8": "8",
+                    "9": "9",
+                    "(": "(",
+                    ")": ")",
+                    "C": "C",
+                    "c": "C",
+                    "+": "+",
+                    "-": "−",
+                    "*": "×",
+                    "/": "÷",
+                    "Enter": "=",
+                    "Backspace": "←",
+                    "Escape": "C"
+                }
+                if (dico[event.key]) {
+                    const falseTarget = {
+                        "className": "touche",
+                        "textContent": dico[event.key]
+                    }
+                    handleEvent({target: falseTarget})
                 }
             }
             function handleEvent(event) {
@@ -246,12 +282,17 @@
                             calculExp += touche
                         }
                     calculStr += touche
+                    if (calculStr.substring(calculStr.length-2, calculStr.length) == "××") {
+                        calculStr = calculStr.substring(0, calculStr.length-2) + "^"
+                    }
                     divReponse.textContent = calculStr
                     divCalcul.textContent = ""
                     }
                 }
             }
             document.querySelector(".calculatrice").addEventListener("click", handleEvent)
+            document.addEventListener("keyup", handleKeyUp);
+            document.addEventListener("keydown", e => {if (e.key == "/"){e.preventDefault();}});
         </script>
     </body>
 </html>
