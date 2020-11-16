@@ -21,12 +21,13 @@
                 cursor: default;
             }
             div.ecran {
-                height: 80px;
+                height: 90px;
                 width: 450px;
                 border: 1px solid;
                 margin: 10px auto;
                 background-color: skyblue;
                 padding: 5px;
+                overflow-x: auto;
             }
             div.calcul {
                 border: none;
@@ -148,8 +149,6 @@
                             index += -1
                         }
                     } else {
-                        console.log(expr)
-                        console.log(index)
                         throw "impossible de déterminer le dividende"
                     }
                     return index
@@ -187,8 +186,6 @@
                             index += 1
                         }
                     } else {
-                        console.log(expr)
-                        console.log(index)
                         throw "impossible de déterminer le diviseur"
                     }
                     return index+1
@@ -221,7 +218,6 @@
                 }
             }
             function handleKeyUp(event) {
-                console.log(event.key)
                 const dico = {
                     "0": "0",
                     "1": "1",
@@ -268,7 +264,7 @@
                         calculExp = ""
                     } else if (touche == "←") {
                         calculStr = calculStr.substr(0, calculStr.length - 1)
-                        calculExp = calculStr.substr(0, calculExp.length - 1)
+                        calculExp = calculExp.substr(0, calculExp.length - 1)
                         divReponse.textContent = calculStr
                         divCalcul.textContent = ""
                     } else {
