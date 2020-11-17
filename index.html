@@ -21,7 +21,7 @@
                 cursor: default;
             }
             div.ecran {
-                height: 90px;
+                height: 100px;
                 width: 450px;
                 border: 1px solid;
                 margin: 10px auto;
@@ -263,6 +263,9 @@
                         calculStr = ""
                         calculExp = ""
                     } else if (touche == "←") {
+                        if (calculStr[calculStr.length - 1] == "^") {
+                            calculExp = calculExp.substr(0, calculExp.length - 1)
+                        }
                         calculStr = calculStr.substr(0, calculStr.length - 1)
                         calculExp = calculExp.substr(0, calculExp.length - 1)
                         divReponse.textContent = calculStr
