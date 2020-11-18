@@ -119,11 +119,12 @@
             var calculStr = ""
             var calculExp = ""
             var replaceExp = true
+            var euclide = false
+            const chiffres = "0123456789"
             const divEcran = document.querySelector("div.ecran")
             const divCalcul = document.querySelector("div.calcul")
             const divReponse = document.querySelector("div.reponse")
             function searchForDividende(expr, index) {
-                const chiffres = "0123456789"
                 if (expr[index-1]) {
                     const char = expr[index-1]
                     if (char == ")") {
@@ -160,7 +161,6 @@
             }
             
             function searchForDiviseur(expr, index) {
-                const chiffres = "0123456789"
                 if (expr[index+1]) {
                     const char = expr[index+1]
                     if (char == "(") {
@@ -200,9 +200,11 @@
                 if (expr.match(regExp)) {
                     const liste = expr.split("÷")
                     if (liste[1] == '0') {
-                        return "division par 0"
+                        euclide = false
+                        return {resVal:"", resStr:"division par 0", done:false}
                     }
-                    return `q = ${Math.floor(liste[0]/liste[1])} ; r = ${liste[0]%liste[1]}`
+                    euclide = true
+                    return {resVal:Math.floor(liste[0]/liste[1]), resStr:`q = ${Math.floor(liste[0]/liste[1])} ; r = ${liste[0]%liste[1]}`, done:true}
                 }
                 while (expr.indexOf("÷") > -1) {
                     const indexDivision = expr.indexOf("÷")
@@ -213,10 +215,12 @@
                 expr = expr.split("<").join("Math.floor(")
                 expr = expr.split(">").join(")")
                 try {
-                    return eval(expr).toString()
+                    euclide = false
+                    return {resVal:eval(expr), resStr:eval(expr).toString(), done:true}
                 } catch (e) {
                     console.error(e)
-                    return "erreur de syntaxe"
+                    euclide = false
+                    return {resVal: "", resStr:"erreur de syntaxe", done:false}
                 }
             }
             function handleKeyUp(event) {
@@ -256,12 +260,12 @@
                 if (event.target.className == "touche") {
                     const touche = event.target.textContent
                     if (touche == "=") {
-                        const resultat = calculer(calculExp)
-                        divReponse.textContent = calculer(calculExp)
+                        const {resVal, resStr, done} = calculer(calculExp)
+                        divReponse.textContent = resStr
                         divCalcul.textContent = calculStr
-                        if (resultat != "erreur de syntaxe") {
-                            calculStr = resultat
-                            calculExp = resultat
+                        if (done) {
+                            calculStr = resStr
+                            calculExp = resVal
                         } else {
                             calculStr = ""
                             calculExp = ""
@@ -286,6 +290,15 @@
                         divEcran.scrollLeft = divEcran.scrollWidth;
                         replaceExp = false
                     } else {
+                        if (chiffres.indexOf(touche) > -1 && replaceExp) {
+                            calculStr = touche
+                        } else if (euclide) {
+                            calculStr = calculExp + touche
+                            euclide = false
+                        } else {
+                            calculStr += touche
+                            euclide = false
+                        }
                         if (touche == "×") {
                             calculExp += "*"
                         } else if (touche == "^") {
@@ -298,11 +311,6 @@
                             } else {
                                 calculExp += touche
                             }
-                        }
-                        if (chiffres.indexOf(touche) > -1 && replaceExp) {
-                            calculStr = touche
-                        } else {
-                            calculStr += touche
                         }
                         if (calculStr.substring(calculStr.length-2, calculStr.length) == "××") {
                             calculStr = calculStr.substring(0, calculStr.length-2) + "^"
