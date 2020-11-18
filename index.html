@@ -258,11 +258,13 @@
                         divCalcul.textContent = calculStr
                         calculStr = ""
                         calculExp = ""
+                        divEcran.scrollLeft = 0;
                     } else if (touche == "C") {
                         divReponse.textContent = ""
                         divCalcul.textContent = ""
                         calculStr = ""
                         calculExp = ""
+                        divEcran.scrollLeft = 0;
                     } else if (touche == "←") {
                         if (calculStr[calculStr.length - 1] == "^") {
                             calculExp = calculExp.substr(0, calculExp.length - 1)
@@ -271,6 +273,7 @@
                         calculExp = calculExp.substr(0, calculExp.length - 1)
                         divReponse.textContent = calculStr
                         divCalcul.textContent = ""
+                        divEcran.scrollLeft = divEcran.scrollWidth;
                     } else {
                         if (touche == "×") {
                             calculExp += "*"
@@ -281,15 +284,15 @@
                         } else {
                             calculExp += touche
                         }
-                    calculStr += touche
-                    if (calculStr.substring(calculStr.length-2, calculStr.length) == "××") {
-                        calculStr = calculStr.substring(0, calculStr.length-2) + "^"
-                    }
-                    divReponse.textContent = calculStr
-                    divCalcul.textContent = ""
+                        calculStr += touche
+                        if (calculStr.substring(calculStr.length-2, calculStr.length) == "××") {
+                            calculStr = calculStr.substring(0, calculStr.length-2) + "^"
+                        }
+                        divReponse.textContent = calculStr
+                        divCalcul.textContent = ""
+                        divEcran.scrollLeft = divEcran.scrollWidth;
                     }
                 }
-                divEcran.scrollLeft = divEcran.scrollWidth;
             }
             document.querySelector(".calculatrice").addEventListener("click", handleEvent)
             document.addEventListener("keyup", handleKeyUp);
