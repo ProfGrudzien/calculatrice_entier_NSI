@@ -118,6 +118,7 @@
         <script>
             var calculStr = ""
             var calculExp = ""
+            var replaceExp = true
             const divEcran = document.querySelector("div.ecran")
             const divCalcul = document.querySelector("div.calcul")
             const divReponse = document.querySelector("div.reponse")
@@ -251,20 +252,29 @@
                 }
             }
             function handleEvent(event) {
+                const chiffres = "0123456789"
                 if (event.target.className == "touche") {
                     const touche = event.target.textContent
                     if (touche == "=") {
+                        const resultat = calculer(calculExp)
                         divReponse.textContent = calculer(calculExp)
                         divCalcul.textContent = calculStr
-                        calculStr = ""
-                        calculExp = ""
+                        if (resultat != "erreur de syntaxe") {
+                            calculStr = resultat
+                            calculExp = resultat
+                        } else {
+                            calculStr = ""
+                            calculExp = ""
+                        }
                         divEcran.scrollLeft = 0;
+                        replaceExp = true
                     } else if (touche == "C") {
                         divReponse.textContent = ""
                         divCalcul.textContent = ""
                         calculStr = ""
                         calculExp = ""
                         divEcran.scrollLeft = 0;
+                        replaceExp = false
                     } else if (touche == "←") {
                         if (calculStr[calculStr.length - 1] == "^") {
                             calculExp = calculExp.substr(0, calculExp.length - 1)
@@ -274,6 +284,7 @@
                         divReponse.textContent = calculStr
                         divCalcul.textContent = ""
                         divEcran.scrollLeft = divEcran.scrollWidth;
+                        replaceExp = false
                     } else {
                         if (touche == "×") {
                             calculExp += "*"
@@ -282,15 +293,24 @@
                         } else if (touche == "−") {
                             calculExp += "-"
                         } else {
-                            calculExp += touche
+                            if (chiffres.indexOf(touche) > -1 && replaceExp) {
+                                calculExp = touche
+                            } else {
+                                calculExp += touche
+                            }
                         }
-                        calculStr += touche
+                        if (chiffres.indexOf(touche) > -1 && replaceExp) {
+                            calculStr = touche
+                        } else {
+                            calculStr += touche
+                        }
                         if (calculStr.substring(calculStr.length-2, calculStr.length) == "××") {
                             calculStr = calculStr.substring(0, calculStr.length-2) + "^"
                         }
                         divReponse.textContent = calculStr
                         divCalcul.textContent = ""
                         divEcran.scrollLeft = divEcran.scrollWidth;
+                        replaceExp = false
                     }
                 }
             }
