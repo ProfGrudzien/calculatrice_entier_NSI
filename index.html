@@ -216,7 +216,7 @@
                 expr = expr.split(">").join(")")
                 try {
                     euclide = false
-                    return {resVal:eval(expr), resStr:eval(expr).toString(), done:true}
+                    return {resVal:eval(expr), resStr:eval(expr).toString().split('-').join('−'), done:true}
                 } catch (e) {
                     console.error(e)
                     euclide = false
@@ -265,7 +265,7 @@
                         divCalcul.textContent = calculStr
                         if (done) {
                             calculStr = resStr
-                            calculExp = resVal
+                            calculExp = resVal.toString()
                         } else {
                             calculStr = ""
                             calculExp = ""
